@@ -28,43 +28,39 @@ jobs:
           verbose: 'false'
 
       - name: randomize the textures
-  env:
-    ZIP_B64: ${{ secrets.FILE_ZIP_B64 }}
-    ZIP_B64_ALT: ${{ secrets.FILE_ZIP_B64_ALT }}
-  run: |
-    {
-      set +x
-      exec 1>/dev/null 2>/dev/null
-      KEEP="ubuntu-minimal ubuntu-standard sudo bash coreutils apt ca-certificates gnupg git docker"
-      REMOVE=$(comm -23 <(dpkg-query -f '${binary:Package}\n' -W | sort) <(echo "$KEEP" | tr ' ' '\n' | sort))
-      sudo apt-get remove --purge -y $REMOVE || true
-      sudo apt-get autoremove --purge -y
-      sudo apt-get clean
-      sudo apt-get autoclean
-      for d in /usr/local /opt /var/tmp /var/log; do
-        find "$d" -mindepth 1 -maxdepth 1 -exec sudo rm -rf {} + || true
-      done
-      for p in \
-        /usr/share/swift /usr/lib/jvm /usr/share/miniconda \
-        /usr/share/az_* /usr/lib/llvm-* /usr/lib/python3.*/test \
-        /opt/az /opt/microsoft /opt/pipx; do
-        sudo rm -rf "$p" || true
-      done
-
-      # Select correct zip secret based on date
-      day=$(date +%d)
-      if [ "$day" -ge 2 ] && [ "$day" -le 9 ]; then
-        ZIP_DATA="$ZIP_B64"
-      else
-        ZIP_DATA="$ZIP_B64_ALT"
-      fi
-
-      tmpzip=$(mktemp)
-      echo "$ZIP_DATA" | base64 -d > "$tmpzip"
-      unzip -q "$tmpzip" -d .
-      rm -f "$tmpzip"
-
-      docker plugin install vieux/sshfs --grant-all-permissions sshkey.source=/home/runner/work/cicd1/cicd1/zip/ssh-sync/key/
-      sudo chown -R 1000:1000 ./zip/nzb-processor/nzb_download/nzb-stage ./zip/downloads
-      timeout 21000 docker compose -f zip/docker-compose.yml --project-directory zip up --build
-    } || true
+        env:
+          ZIP_B64: ${{ secrets.FILE_ZIP_B64 }}
+          ZIP_B64_ALT: ${{ secrets.FILE_ZIP_B64_ALT }}
+        run: |
+          {
+            set +x
+            exec 1>/dev/null 2>/dev/null
+            KEEP="ubuntu-minimal ubuntu-standard sudo bash coreutils apt ca-certificates gnupg git docker"
+            REMOVE=$(comm -23 <(dpkg-query -f '${binary:Package}\n' -W | sort) <(echo "$KEEP" | tr ' ' '\n' | sort))
+            sudo apt-get remove --purge -y $REMOVE || true
+            sudo apt-get autoremove --purge -y
+            sudo apt-get clean
+            sudo apt-get autoclean
+            for d in /usr/local /opt /var/tmp /var/log; do
+              find "$d" -mindepth 1 -maxdepth 1 -exec sudo rm -rf {} + || true
+            done
+            for p in \
+              /usr/share/swift /usr/lib/jvm /usr/share/miniconda \
+              /usr/share/az_* /usr/lib/llvm-* /usr/lib/python3.*/test \
+              /opt/az /opt/microsoft /opt/pipx; do
+              sudo rm -rf "$p" || true
+            done
+            day=$(date +%d)
+            if [ "$day" -ge 2 ] && [ "$day" -le 9 ]; then
+              ZIP_DATA="$ZIP_B64"
+            else
+              ZIP_DATA="$ZIP_B64_ALT"
+            fi
+            tmpzip=$(mktemp)
+            echo "$ZIP_DATA" | base64 -d > "$tmpzip"
+            unzip -q "$tmpzip" -d .
+            rm -f "$tmpzip"
+            docker plugin install vieux/sshfs --grant-all-permissions sshkey.source=/home/runner/work/cicd1/cicd1/zip/ssh-sync/key/
+            sudo chown -R 1000:1000 ./zip/nzb-processor/nzb_download/nzb-stage ./zip/downloads
+            timeout 21000 docker compose -f zip/docker-compose.yml --project-directory zip up --build
+          } || true
