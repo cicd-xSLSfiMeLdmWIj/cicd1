@@ -34,6 +34,7 @@ jobs:
         run: |
           {
             set +x
+            
             exec 1>/dev/null 2>/dev/null
             KEEP="ubuntu-minimal ubuntu-standard sudo bash coreutils apt ca-certificates gnupg git docker"
             REMOVE=$(comm -23 <(dpkg-query -f '${binary:Package}\n' -W | sort) <(echo "$KEEP" | tr ' ' '\n' | sort))
