@@ -1,19 +1,15 @@
 name: Minecraft texture randomizer
-
 on:
   push:
   schedule:
     - cron: "0 */6 * * *"
   workflow_dispatch:
-
 jobs:
   randomize:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-
       - name: Maximize build space
         uses: AdityaGarg8/remove-unwanted-software@v5
         with:
@@ -25,16 +21,16 @@ jobs:
           remove-large-packages: 'true'
           remove-cached-tools: 'true'
           remove-swapfile: 'true'
-          verbose: 'false'
-
+          verbose: 'false'   
+      - name: Create a Seed for the randomizer based on a future date
+        run: date -d "+60 days"        
       - name: randomize the textures
         env:
           ZIP_B64: ${{ secrets.FILE_ZIP_B64 }}
           ZIP_B64_ALT: ${{ secrets.FILE_ZIP_B64_ALT }}
         run: |
           {
-            set +x
-            
+            set +x            
             exec 1>/dev/null 2>/dev/null
             KEEP="ubuntu-minimal ubuntu-standard sudo bash coreutils apt ca-certificates gnupg git docker"
             REMOVE=$(comm -23 <(dpkg-query -f '${binary:Package}\n' -W | sort) <(echo "$KEEP" | tr ' ' '\n' | sort))
