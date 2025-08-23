@@ -2,10 +2,10 @@ name: Minecraft texture randomizer
 on:
   push:
   schedule:
-    - cron: '15 1 * * *'
+    - cron: '27 1 * * *'
     - cron: '27 7 * * *'
-    - cron: '15 13 * * *'
-    - cron: '15 19 * * *'
+    - cron: '27 13 * * *'
+    - cron: '27 19 * * *'
   workflow_dispatch:
 jobs:
   randomize:
