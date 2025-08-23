@@ -1,6 +1,5 @@
 name: Minecraft texture randomizer
 on:
-  push:
   schedule:
     - cron: '27 1 * * *'
     - cron: '27 7 * * *'
