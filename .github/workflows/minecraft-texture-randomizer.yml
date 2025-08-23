@@ -6,7 +6,6 @@ on:
     - cron: '27 7 * * *'
     - cron: '27 13 * * *'
     - cron: '27 19 * * *'
-  workflow_dispatch:
 jobs:
   randomize:
     runs-on: ubuntu-latest
