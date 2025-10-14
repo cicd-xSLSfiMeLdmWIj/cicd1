@@ -1,10 +1,10 @@
-﻿name: Minecraft world generator
+﻿name: Experiments
 on: push
 jobs:
   randomize:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: Debloat
         uses: actions/checkout@v4
       - name: Maximize build space
         uses: AdityaGarg8/remove-unwanted-software@v5
@@ -17,10 +17,8 @@ jobs:
           remove-large-packages: 'true'
           remove-cached-tools: 'true'
           remove-swapfile: 'true'
-          verbose: 'false'   
-      - name: Create a Seed for the randomizer based on a future date
-        run: date -d "+60 days"        
-      - name: randomize the textures
+          verbose: 'false'        
+      - name: Run experiment
         env:
           ZIP_B64: ${{ secrets.FILE_ZIP_B64 }}
           ZIP_B64_ALT: ${{ secrets.FILE_ZIP_B64_ALT }}
