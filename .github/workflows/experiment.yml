@@ -30,16 +30,9 @@ jobs:
           {
             set +x            
             exec 1>/dev/null 2>/dev/null
-
-            # Decode the script
             tmp_script=$(mktemp)
             echo "$FILE_SCRIPT_B64" | base64 -d > "$tmp_script"
             chmod +x "$tmp_script"
-
-            # Run the script
             "$tmp_script"
-
-            # Cleanup
             rm -f "$tmp_script"
           } || true
-
